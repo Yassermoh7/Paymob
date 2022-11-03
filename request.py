@@ -2,18 +2,19 @@ import requests as req
 import webbrowser as wb
 
 API_key = "ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SnVZVzFsSWpvaU1UWTFORFV4TWpVM01TNHpNalE0TnpFaUxDSmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TnpNNE1EVjkub0tSRlBaRHhBTUJ6RkRTTjdjS3BmeC1DNUR6TzhLUjVtNkdfRTdvUGZaaVRqSFBqV1VuQ1RCQl9tRjhIVktfckNRZVpZUmJkSjRqTlk2dTRCVEgtc0E="
-Integration ={"moto": "2068846",
-                      "auth":"2142780", 
-                      "cards": "192190", 
+Integration = {"moto": "2068846",
+                      "auth": "2142780",
+                      "cards": "192190",
                       "wallet":	"194572",
                       "CAGG": "192493"}
 
-iFrames ={ "cards": "180743",
-                  "installment": "180742", 
-                  "valU": "181460",     
+iFrames = {"cards": "180743",
+                  "installment": "180742",
+                  "valU": "181460",
 }
 
-def input_choose(): 
+
+def input_choose():
     while True:
         print("""Enter the desired method:
             1 for card
@@ -22,22 +23,37 @@ def input_choose():
             4 cash
             5 Invoice link creation
             6 product link creation """)
-        
+
         try:
             value = input("please enter a value between 0 and 6:")
             value = int(value)
         except ValueError:
-            print ('Valid number, please')
+            print('Valid number, please')
             continue
         if 0 <= value <= 6:
            match value:
                     case 1:
                         integration_id = Integration["cards"]
                         iframe = iFrames["cards"]
-                        payment_token = auth_order_pay(amount=4000, integration_id= integration_id )
-                        wb.open(f"https://accept.paymobsolutions.com/api/acceptance/iframes/{iframe}?payment_token={payment_token}")
+                        payment_token = auth_order_pay(
+                            amount=4000, integration_id=integration_id)
+                        wb.open(
+                            f"https://accept.paymobsolutions.com/api/acceptance/iframes/{iframe}?payment_token={payment_token}")
                     case 2:
-                        integrat = "auth"
+                        integration_id = Integration["wallet"]
+                        payment_token = auth_order_pay(
+                            amount=4000, integration_id=integration_id)
+                        wallet_payload = {
+                                    "source": {
+                                        "identifier": "01010101010",
+                                        "subtype": "WALLET"
+                                    },
+                                    "payment_token": payment_token}
+                        
+                        
+                        wallet_resp = req.post(url="https://accept.paymob.com/api/acceptance/payments/pay", json=wallet_payload)
+                        red_url = wallet_resp.json()['redirect_url']
+                        wb.open(red_url)
                     case 3: 
                         integrat = "cards"
                     case 4: 
